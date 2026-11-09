@@ -113,6 +113,20 @@
 
   .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 18px; border: 1.5px dashed var(--line); border-radius: 16px; }
 
+  /* Jauge du mois */
+  .gauge { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); padding: 16px 16px 18px; margin-bottom: 24px; }
+  .gauge-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+  .gauge-pct { font-weight: 600; color: var(--c-lavande-d); font-variant-numeric: tabular-nums; }
+  .gauge-num { font-size: 15px; color: var(--muted); margin: 2px 0 12px; }
+  .gauge-num b { font-size: 26px; color: var(--text); font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .gauge-bar { position: relative; height: 12px; border-radius: 6px; background: var(--line); }
+  .gauge-bar > i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--c-rose-d), var(--c-lavande-d)); opacity: .75; transition: width .4s ease; }
+  .gauge-mark { position: absolute; top: -4px; bottom: -4px; width: 2px; border-radius: 1px; background: var(--muted); opacity: .45; transform: translateX(-1px); }
+  .mini { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .mini-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .mini-bar > i { display: block; height: 100%; background: var(--tint-d); border-radius: 3px; }
+  .mini span { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
   /* Bilan du mois */
   .recap { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 14px; margin-bottom: 8px; }
   .recap-top { display: flex; align-items: center; gap: 12px; }
@@ -308,7 +322,39 @@
     const c = Math.floor((u - a) / h.every);
     const startUnit = a + c * h.every;
     const end = new Date(unitStart(h.period, startUnit + h.every) - DAY / 2);
-    return { id: c, end: new Date(end.getFullYear(), end.getMonth(), end.getDate()) };
+    return { id: c, start: unitStart(h.period, startUnit), end: new Date(end.getFullYear(), end.getMonth(), end.getDate()) };
+  }
+
+  // Objectif du mois en cours pour une habitude : toutes les occurrences
+  // (cycles) du mois, et combien sont déjà réalisées.
+  function monthProgress(h, now = new Date()) {
+    const mStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const mEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const cur = cycleOf(h, now).id;
+    const hits = (state.month && state.month.hits[h.id]) || [];
+    const first = parseISO(h.start);
+    let target = 0, done = 0;
+    for (let d = mStart; d <= mEnd; ) {
+      const c = cycleOf(h, d);
+      d = new Date(c.end.getFullYear(), c.end.getMonth(), c.end.getDate() + 1);
+      if (c.end < first) continue; // l'habitude n'existait pas encore
+      // Une semaine à cheval sur deux mois compte pour le mois où elle commence
+      if (h.period !== 'month' && c.start < mStart) continue;
+      target += h.times;
+      if (c.id === cur) done += countOf(h);
+      else if (c.id < cur) {
+        const from = c.start < mStart ? 1 : c.start.getDate();
+        const to = c.end > mEnd ? mEnd.getDate() : c.end.getDate();
+        done += Math.min(h.times, hits.filter(x => x >= from && x <= to).length);
+      }
+    }
+    return { done: Math.min(done, target), target };
+  }
+  function monthTotals() {
+    return state.habits.reduce((t, h) => {
+      const p = monthProgress(h);
+      return { done: t.done + p.done, target: t.target + p.target };
+    }, { done: 0, target: 0 });
   }
 
   // ---------- État ----------
@@ -400,8 +446,20 @@
     $('#view').innerHTML = view === 'todo' ? renderTodo() : renderMonth();
   }
 
+  function gaugeHTML() {
+    const { done, target } = monthTotals();
+    if (!target) return '';
+    const now = new Date();
+    const pct = Math.round(done / target * 100);
+    return `<div class="gauge">
+      <div class="gauge-top"><span class="gauge-label">Mois de ${fmt(now, { month: 'long' })}</span><span class="gauge-pct">${pct} %</span></div>
+      <div class="gauge-num"><b>${done}</b> sur ${target}</div>
+      <div class="gauge-bar"><i style="width:${pct}%"></i><span class="gauge-mark" style="left:${now.getDate() / new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() * 100}%" title="Aujourd'hui"></span></div>
+    </div>`;
+  }
+
   function renderTodo() {
-    let html = '';
+    let html = gaugeHTML();
     for (const p of ['day', 'week', 'month']) {
       const hs = state.habits.filter(h => h.period === p);
       if (!hs.length) continue;
@@ -439,6 +497,8 @@
     </div>`;
   }
 
+  const mini = ({ done, target }) => `<div class="mini"><div class="mini-bar"><i style="width:${target ? done / target * 100 : 0}%"></i></div><span>${done} sur ${target}</span></div>`;
+
   function renderMonth() {
     const now = new Date();
     const m = state.month;
@@ -451,6 +511,7 @@
     const cyclesDone = hs.filter(h => countOf(h) >= h.times).length;
 
     let html = `<div class="block-head"><h2 style="text-transform:capitalize">${fmt(now, { month: 'long', year: 'numeric' })}</h2><span class="sub">jour ${today}/${dim}</span></div>
+      ${gaugeHTML()}
       <div class="stats">
         <div class="stat"><b>${totalHits}</b><span>validations</span></div>
         <div class="stat"><b>${activeDays}</b><span>jours actifs</span></div>
@@ -469,7 +530,7 @@
         if (p === 'day') {
           // Jours où l'objectif du jour a été atteint
           const full = Object.keys(per).filter(d => per[d] >= h.times).length;
-          score = `${full}/${today} j`;
+          score = `${full} j réussi${full > 1 ? 's' : ''}`;
           grid = `<div class="days">${Array.from({ length: dim }, (_, i) => {
             const d = i + 1, c = per[d] || 0;
             const cls = [c >= h.times ? 'on' : '', d > today ? 'future' : '', d === today ? 'today' : ''].join(' ');
@@ -484,6 +545,7 @@
         }
         html += `<div class="recap" style="${tint(h)}">
           <div class="recap-top"><div class="emoji">${esc(h.emoji || '•')}</div><div class="name">${esc(h.name)}</div><div class="score">${esc(score)}</div></div>
+          ${mini(monthProgress(h))}
           ${grid}</div>`;
       }
       html += `</section>`;

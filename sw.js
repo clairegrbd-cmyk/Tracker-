@@ -1,5 +1,5 @@
 // Cache hors-ligne simple : réseau d'abord, cache en secours.
-const CACHE = 'habitudes-v1';
+const CACHE = 'habitudes-v2';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon.svg', 'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', e => {

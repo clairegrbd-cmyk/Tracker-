@@ -7,6 +7,7 @@ Petite web-app minimaliste (couleurs pastel) pour suivre ses bonnes habitudes su
   (ex. 2×/jour, 2×/semaine, 1× tous les 2 mois, 1× tous les 3 mois…).
 - Une tâche cochée reste cochée jusqu'au début de son prochain cycle
   (minuit, lundi, 1er du mois, ou tous les N mois à partir de la date de début choisie).
+- **Jauge du mois** (« 10 sur 15 ») en haut de la page et dans le bilan, avec un repère pour le jour actuel.
 - **Bilan du mois** : ce qui a été fait pendant le mois en cours (remis à zéro chaque mois, pas d'historique).
 - Bouton en haut à droite : ajouter / modifier / supprimer les habitudes, sauvegarde et restauration (fichier JSON).
 - Fonctionne hors-ligne, données stockées sur le téléphone.
