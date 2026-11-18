@@ -33,5 +33,5 @@ Deuxième petite app, dans le dossier `budget/` (`https://<utilisateur>.github.i
 - **Épargne de la semaine** (ex. 100 €) : une case à cocher, dès qu'elle est cochée c'est considéré comme fait.
 - Ajouter une dépense : montant, catégorie, description facultative, date. Toucher une dépense pour la modifier ou la supprimer.
 - Les semaines vont du lundi au dimanche ; flèches pour revoir les semaines passées.
-- Réglages (bouton en haut à droite) : limites, noms des catégories, montant d'épargne, sauvegarde / restauration.
+- Réglages (bouton en haut à droite) : limites, noms et emojis des catégories, montant d'épargne, sauvegarde / restauration.
 - S'installe sur l'écran d'accueil de l'iPhone de la même façon (ouvrir l'URL `/budget/` dans Safari).

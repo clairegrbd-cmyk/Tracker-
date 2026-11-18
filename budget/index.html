@@ -175,8 +175,10 @@
 
   .row { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: 14px; padding: 6px 6px 6px 14px; }
   .row + .row { margin-top: 8px; }
-  .row .emoji { font-size: 18px; }
-  .row input[type=text] { flex: 1; border: 0; padding: 8px 0; min-height: 40px; background: none; font-weight: 600; }
+  .row .emo { width: 44px; height: 40px; flex: none; text-align: center; font-size: 20px; border: 1.5px dashed var(--line); border-radius: 12px; background: var(--bg); color: var(--text); padding: 0; outline: none; caret-color: transparent; }
+  .row .emo:focus { border-color: var(--primary); border-style: solid; }
+  .row { padding-left: 6px; }
+  .row input.nm { flex: 1; border: 0; padding: 8px 0; min-height: 40px; background: none; font-weight: 600; }
   .row .lim { width: 110px; flex: none; position: relative; }
   .row .lim input { text-align: right; padding: 8px 30px 8px 10px; min-height: 40px; font-weight: 700; }
   .row .lim::after { content: "€"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
@@ -263,7 +265,7 @@
       <h3>Réglages</h3>
       <button type="button" class="link" data-close>Annuler</button>
     </div>
-    <label class="f">Limites par semaine</label>
+    <label class="f">Limites par semaine <span style="font-weight:400">— touche l'emoji pour le changer</span></label>
     <div id="set-cats"></div>
     <div class="total num"><span>Budget total de la semaine</span><b id="set-total">0 €</b></div>
     <label class="f" for="set-sav">Épargne à mettre de côté chaque semaine</label>
@@ -328,6 +330,7 @@
   const dayFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   const shortFmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const lastGrapheme = v => { v = String(v).trim(); if (!v) return ''; try { return [...new Intl.Segmenter('fr', { granularity: 'grapheme' }).segment(v)].pop().segment; } catch (e) { return [...v].pop(); } };
   const catById = id => state.settings.cats.find(c => c.id === id) || state.settings.cats[3];
 
   function weekExpenses(start = weekStart) {
@@ -481,20 +484,25 @@
   $('#open-settings').addEventListener('click', () => {
     $('#set-cats').innerHTML = state.settings.cats.map(c => `
       <div class="row" data-id="${c.id}">
-        <span class="emoji">${c.emoji}</span>
-        <input type="text" value="${esc(c.name)}" aria-label="Nom de la catégorie" maxlength="20">
+        <input type="text" class="emo" value="${c.emoji}" aria-label="Emoji ${esc(c.name)}" autocomplete="off">
+        <input type="text" class="nm" value="${esc(c.name)}" aria-label="Nom de la catégorie" maxlength="20">
         <span class="lim"><input class="amount num" inputmode="decimal" value="${String(c.limit).replace('.', ',')}" aria-label="Limite ${esc(c.name)}"></span>
       </div>`).join('');
     $('#set-sav').value = String(state.settings.savings).replace('.', ',');
     setTotal();
     setDialog.showModal();
   });
-  $('#set-cats').addEventListener('input', setTotal);
+  $('#set-cats').addEventListener('input', e => {
+    if (e.target.classList.contains('emo')) { const g = lastGrapheme(e.target.value); if (g !== e.target.value) e.target.value = g; }
+    setTotal();
+  });
+  $('#set-cats').addEventListener('focusin', e => { if (e.target.classList.contains('emo')) e.target.select(); });
   $('#set-form').addEventListener('submit', e => {
     e.preventDefault();
     document.querySelectorAll('#set-cats .row').forEach(r => {
       const c = state.settings.cats.find(x => x.id === r.dataset.id);
-      c.name = r.querySelector('input[type=text]').value.trim() || DEFAULTS.cats.find(d => d.id === c.id).name;
+      c.emoji = lastGrapheme(r.querySelector('.emo').value) || c.emoji;
+      c.name = r.querySelector('.nm').value.trim() || DEFAULTS.cats.find(d => d.id === c.id).name;
       c.limit = Math.max(0, parseAmount(r.querySelector('.lim input').value) || 0);
     });
     state.settings.savings = Math.max(0, parseAmount($('#set-sav').value) || 0);
