@@ -185,6 +185,60 @@
   .total { display: flex; justify-content: space-between; margin: 12px 4px 0; font-size: 14px; color: var(--muted); }
   .total b { color: var(--text); }
   .tools { display: flex; gap: 10px; margin-top: 8px; }
+
+  /* Onglets */
+  .tabs { display: flex; gap: 6px; background: var(--track); padding: 4px; border-radius: 14px; margin-bottom: 18px; }
+  .tab { flex: 1; padding: 8px 0; border-radius: 10px; font-size: 14px; font-weight: 650; color: var(--muted); }
+  .tab[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  [hidden] { display: none !important; }
+
+  /* Vue mois */
+  .m-sav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(232, 247, 238, .2); }
+  .m-sav .t { font-size: 13px; opacity: .8; }
+  .m-sav .v { font-size: 22px; font-weight: 750; letter-spacing: -.02em; }
+  .m-sav .v small { font-size: 13px; font-weight: 500; opacity: .75; letter-spacing: 0; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(232, 247, 238, .55); }
+  .dots i.on { background: var(--mint); border-color: var(--mint); }
+  .m-cats { padding: 6px 16px; margin-bottom: 26px; }
+  .mrow { padding: 10px 0; }
+  .mrow + .mrow { border-top: 1px solid var(--line); }
+  .mrow-top { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 15px; }
+  .mrow-top .n { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mrow-top .v { font-size: 13.5px; color: var(--muted); }
+  .mrow-top .v b { color: var(--text); font-weight: 700; }
+  .mrow.over .v, .mrow.over .v b { color: var(--accent); }
+  .mrow.over .bar > i { background: var(--accent); }
+  .mrow .bar { height: 6px; }
+
+  .wk { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; }
+  .wk summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+  .wk summary::-webkit-details-marker { display: none; }
+  .wk .ws-info { flex: 1; min-width: 0; }
+  .wk .ws-title { font-weight: 650; }
+  .wk .ws-title em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--primary); background: var(--track); padding: 2px 7px; border-radius: 8px; margin-left: 6px; vertical-align: 1px; }
+  .wk .ws-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .wk.over .ws-meta b { color: var(--accent); }
+  .wk .ws-bar { margin-top: 8px; height: 5px; }
+  .wk.over .ws-bar > i { background: var(--accent); }
+  .wk .pig { flex: none; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 10px; background: var(--track); color: var(--muted); }
+  .wk .pig.on { background: var(--primary); color: var(--on-primary); }
+  .wk .chev { width: 18px; height: 18px; color: var(--muted); transition: transform .2s; flex: none; }
+  .wk[open] .chev { transform: rotate(90deg); }
+  .wk-body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .wk-body .mrow { padding: 8px 0; }
+  .wk-body .mrow-top { font-size: 14px; margin-bottom: 5px; }
+  .wk-body .sv { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 6px 0 4px; }
+  .wk-body .sv .tick { width: 28px; height: 28px; }
+  .wk-body .sv .tick svg { width: 14px; height: 14px; }
+  .wk-body .sv.done .tick { background: var(--primary); }
+  .wk-body .sv.done .tick svg { opacity: 1; }
+  .wk-body .sv span.l { flex: 1; font-weight: 600; font-size: 14.5px; }
+  .wk-body .sv span.r { font-weight: 700; color: var(--primary); }
+  .wk-body .day { margin: 12px 0 4px; }
+  .wk-body .exp { padding: 8px 0; }
+  .wk-body .none { font-size: 13.5px; color: var(--muted); padding: 10px 0 2px; }
+  .wk-body .goto { display: block; margin: 12px auto 0; color: var(--primary); font-weight: 600; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -207,6 +261,12 @@
   </button>
 </header>
 
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-view="week">Semaine</button>
+  <button class="tab" role="tab" data-view="month">Mois</button>
+</div>
+
+<div id="view-week">
 <section class="card summary" id="summary">
   <div class="label">Reste à dépenser cette semaine</div>
   <div class="big num" id="sum-left">0 €</div>
@@ -228,6 +288,24 @@
 
 <h2>Dépenses <span id="exp-count"></span></h2>
 <div id="expenses"></div>
+</div>
+
+<div id="view-month" hidden>
+  <section class="card summary" id="m-summary">
+    <div class="label" id="m-label">Dépensé ce mois-ci</div>
+    <div class="big num" id="m-spent">0 €</div>
+    <div class="bar"><i id="m-bar"></i></div>
+    <div class="foot num"><span id="m-left"></span><span id="m-total"></span></div>
+    <div class="m-sav">
+      <div><div class="t">Mis de côté</div><div class="v num" id="m-saved">0 €</div></div>
+      <div class="dots" id="m-dots"></div>
+    </div>
+  </section>
+  <h2>Par catégorie <span id="m-weeks"></span></h2>
+  <div class="card m-cats" id="m-cats"></div>
+  <h2>Semaines <span>touche pour le détail</span></h2>
+  <div id="m-list"></div>
+</div>
 
 <button class="fab" id="add">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -301,11 +379,14 @@
       const s = JSON.parse(localStorage.getItem(STORE_KEY));
       if (s && s.settings && Array.isArray(s.expenses)) return normalize(s);
     } catch (e) {}
-    return { settings: structuredClone(DEFAULTS), expenses: [], saved: {} };
+    return { settings: structuredClone(DEFAULTS), expenses: [], saved: {}, view: 'week' };
   }
   function normalize(s) {
     s.saved = s.saved || {};
     s.settings.savings = Number(s.settings.savings) || 0;
+    // l'épargne cochée garde le montant du moment où elle a été cochée
+    for (const k in s.saved) if (typeof s.saved[k] !== 'number') s.saved[k] = s.settings.savings;
+    s.view = s.view === 'month' ? 'month' : 'week';
     // garde toujours les 4 catégories, dans l'ordre
     s.settings.cats = DEFAULTS.cats.map(d => ({ ...d, ...(s.settings.cats || []).find(c => c.id === d.id) }));
     return s;
@@ -321,6 +402,17 @@
   const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
 
   let weekStart = mondayOf(today());
+  // un mois = les semaines dont le lundi tombe dans ce mois
+  let month = { y: weekStart.getFullYear(), m: weekStart.getMonth() };
+  function monthWeeks(y = month.y, m = month.m) {
+    const first = new Date(y, m, 1);
+    let mon = mondayOf(first);
+    if (mon < first) mon = addDays(mon, 7);
+    const out = [];
+    for (; mon.getMonth() === m; mon = addDays(mon, 7)) out.push(mon);
+    return out;
+  }
+  const syncMonth = () => { month = { y: weekStart.getFullYear(), m: weekStart.getMonth() }; };
 
   // ---------- format ----------
   const eur0 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
@@ -329,6 +421,12 @@
   const parseAmount = s => { const n = parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? Math.round(n * 100) / 100 : NaN; };
   const dayFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   const shortFmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
+  const short = d => shortFmt.format(d).replace('.', '');
+  const monthFmt = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+  const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long' });
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const weekTotal = () => state.settings.cats.reduce((s, c) => s + c.limit, 0);
+  const savedAmount = ws => state.saved[ws];
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lastGrapheme = v => { v = String(v).trim(); if (!v) return ''; try { return [...new Intl.Segmenter('fr', { granularity: 'grapheme' }).segment(v)].pop().segment; } catch (e) { return [...v].pop(); } };
   const catById = id => state.settings.cats.find(c => c.id === id) || state.settings.cats[3];
@@ -340,12 +438,112 @@
   function spentIn(list, catId) { return list.filter(e => e.cat === catId).reduce((s, e) => s + e.amount, 0); }
 
   // ---------- rendu ----------
+  function expensesHtml(list) {
+    const byDay = {};
+    [...list].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created).forEach(e => (byDay[e.date] = byDay[e.date] || []).push(e));
+    return Object.entries(byDay).map(([d, items]) => ({ d, items }));
+  }
+  function expRow(e) {
+    const c = catById(e.cat);
+    return `<button class="exp" data-id="${e.id}">
+      <span class="emoji">${c.emoji}</span>
+      <span class="info"><div class="note">${esc(e.note || c.name)}</div>${e.note ? `<div class="catname">${esc(c.name)}</div>` : ''}</span>
+      <span class="amt num">${money(e.amount)}</span>
+    </button>`;
+  }
+  function catRow(c, spent, limit) {
+    const over = spent > limit;
+    const pct = limit ? Math.min(100, spent / limit * 100) : (spent > 0 ? 100 : 0);
+    return `<div class="mrow${over ? ' over' : ''}">
+      <div class="mrow-top"><span>${c.emoji}</span><span class="n">${esc(c.name)}</span><span class="v num"><b>${money(spent)}</b> / ${money(limit)}</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }
+
   function render() {
+    const isMonth = state.view === 'month';
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.view === state.view));
+    $('#view-week').hidden = isMonth;
+    $('#view-month').hidden = !isMonth;
+    $('#prev').setAttribute('aria-label', isMonth ? 'Mois précédent' : 'Semaine précédente');
+    $('#next').setAttribute('aria-label', isMonth ? 'Mois suivant' : 'Semaine suivante');
+    isMonth ? renderMonth() : renderWeek();
+  }
+
+  function renderMonth() {
+    const t = mondayOf(today());
+    const diff = (month.y - t.getFullYear()) * 12 + month.m - t.getMonth();
+    $('#week-sub').textContent = diff === 0 ? 'Ce mois-ci' : diff === -1 ? 'Le mois dernier' : diff < 0 ? `Il y a ${-diff} mois` : `Dans ${diff} mois`;
+    $('#week-title').textContent = cap(monthFmt.format(new Date(month.y, month.m, 1)));
+    $('#next').disabled = diff >= 0;
+
+    const weeks = monthWeeks();
+    const lists = weeks.map(w => weekExpenses(w));
+    const all = lists.flat();
+    const wTotal = weekTotal();
+    const total = wTotal * weeks.length;
+    const spent = all.reduce((s, e) => s + e.amount, 0);
+    const left = total - spent;
+
+    $('#m-label').textContent = `Dépensé en ${monthName.format(new Date(month.y, month.m, 1))}`;
+    $('#m-summary').classList.toggle('over', left < 0);
+    $('#m-spent').textContent = money(spent);
+    $('#m-bar').style.width = (total ? Math.min(100, spent / total * 100) : 0) + '%';
+    $('#m-left').textContent = left < 0 ? `${money(-left)} de dépassement` : `reste ${money(left)}`;
+    $('#m-total').textContent = `sur ${money(total)}`;
+
+    const keys = weeks.map(iso);
+    const saved = keys.reduce((s, k) => s + (savedAmount(k) || 0), 0);
+    const goal = keys.reduce((s, k) => s + (savedAmount(k) ?? state.settings.savings), 0);
+    $('#m-saved').innerHTML = `${money(saved)} <small>sur ${money(goal)}</small>`;
+    $('#m-dots').innerHTML = keys.map(k => `<i class="${savedAmount(k) != null ? 'on' : ''}"></i>`).join('');
+
+    $('#m-weeks').textContent = `${weeks.length} semaines · ${money(wTotal)}/sem.`;
+    $('#m-cats').innerHTML = state.settings.cats.map(c => catRow(c, spentIn(all, c.id), c.limit * weeks.length)).join('');
+
+    const curKey = iso(t);
+    const openKeys = new Set([...document.querySelectorAll('#m-list details[open]')].map(d => d.dataset.week));
+    const firstRender = !$('#m-list').dataset.month || $('#m-list').dataset.month !== `${month.y}-${month.m}`;
+    $('#m-list').dataset.month = `${month.y}-${month.m}`;
+    $('#m-list').innerHTML = weeks.map((w, i) => {
+      const k = keys[i], list = lists[i];
+      const sp = list.reduce((s, e) => s + e.amount, 0), over = sp > wTotal;
+      const sv = savedAmount(k);
+      const isOpen = firstRender ? k === curKey : openKeys.has(k);
+      const future = w > t;
+      const days = expensesHtml(list);
+      return `<details class="wk${over ? ' over' : ''}" data-week="${k}"${isOpen ? ' open' : ''}>
+        <summary>
+          <div class="ws-info">
+            <div class="ws-title">${short(w)} – ${short(addDays(w, 6))}${k === curKey ? '<em>en cours</em>' : ''}</div>
+            <div class="ws-meta num"><b>${money(sp)}</b> / ${money(wTotal)}${over ? ' · dépassé' : future ? '' : ` · reste ${money(wTotal - sp)}`}</div>
+            <div class="bar ws-bar"><i style="width:${wTotal ? Math.min(100, sp / wTotal * 100) : 0}%"></i></div>
+          </div>
+          <span class="pig${sv != null ? ' on' : ''}">${sv != null ? '✓ ' + money(sv) : 'épargne'}</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </summary>
+        <div class="wk-body">
+          ${state.settings.cats.map(c => catRow(c, spentIn(list, c.id), c.limit)).join('')}
+          <button class="sv${sv != null ? ' done' : ''}" data-save-week="${k}">
+            <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+            <span class="l">${sv != null ? 'Épargne mise de côté' : 'Épargne à mettre de côté'}</span>
+            <span class="r num">${money(sv ?? state.settings.savings)}</span>
+          </button>
+          ${days.length ? days.map(({ d, items }) => `
+            <div class="day"><span>${dayFmt.format(parseIso(d))}</span><span class="num">${money(items.reduce((s, e) => s + e.amount, 0))}</span></div>
+            ${items.map(expRow).join('')}`).join('') : '<div class="none">Aucune dépense cette semaine.</div>'}
+          <button class="goto" data-goto-week="${k}">Ouvrir la vue semaine →</button>
+        </div>
+      </details>`;
+    }).join('');
+  }
+
+  function renderWeek() {
     const ws = iso(weekStart), cur = iso(mondayOf(today()));
     const end = addDays(weekStart, 6);
     const diff = Math.round((weekStart - mondayOf(today())) / 864e5 / 7);
     $('#week-sub').textContent = diff === 0 ? 'Cette semaine' : diff === -1 ? 'Semaine dernière' : diff === 1 ? 'Semaine prochaine' : diff < 0 ? `Il y a ${-diff} semaines` : `Dans ${diff} semaines`;
-    $('#week-title').textContent = `${shortFmt.format(weekStart).replace('.', '')} – ${shortFmt.format(end).replace('.', '')}`;
+    $('#week-title').textContent = `${short(weekStart)} – ${short(end)}`;
     $('#next').disabled = ws >= cur;
 
     const list = weekExpenses();
@@ -359,11 +557,11 @@
     $('#sum-spent').textContent = `${money(spent)} dépensés`;
     $('#sum-total').textContent = `sur ${money(total)}`;
 
-    const done = !!state.saved[ws];
+    const done = savedAmount(ws) != null;
     const sav = $('#savings');
     sav.classList.toggle('done', done);
     sav.setAttribute('aria-pressed', done);
-    $('#sav-amount').textContent = money(state.settings.savings);
+    $('#sav-amount').textContent = money(done ? savedAmount(ws) : state.settings.savings);
     $('#sav-meta').textContent = done ? 'Mis de côté ✓' : 'À mettre de côté — coche quand c\'est fait';
 
     $('#cats').innerHTML = state.settings.cats.map(c => {
@@ -381,29 +579,35 @@
     if (!list.length) {
       $('#expenses').innerHTML = `<div class="empty">Aucune dépense ${diff === 0 ? 'pour l\'instant cette semaine' : 'cette semaine-là'}.</div>`;
     } else {
-      const byDay = {};
-      [...list].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created).forEach(e => (byDay[e.date] = byDay[e.date] || []).push(e));
-      $('#expenses').innerHTML = Object.entries(byDay).map(([d, items]) => `
+      $('#expenses').innerHTML = expensesHtml(list).map(({ d, items }) => `
         <div class="day"><span>${dayFmt.format(parseIso(d))}</span><span class="num">${money(items.reduce((s, e) => s + e.amount, 0))}</span></div>
-        <div class="card exp-list" style="padding:0">${items.map(e => {
-          const c = catById(e.cat);
-          return `<button class="exp" data-id="${e.id}">
-            <span class="emoji">${c.emoji}</span>
-            <span class="info"><div class="note">${esc(e.note || c.name)}</div>${e.note ? `<div class="catname">${esc(c.name)}</div>` : ''}</span>
-            <span class="amt num">${money(e.amount)}</span>
-          </button>`;
-        }).join('')}</div>`).join('');
+        <div class="card exp-list" style="padding:0">${items.map(expRow).join('')}</div>`).join('');
     }
   }
 
   // ---------- navigation ----------
-  $('#prev').addEventListener('click', () => { weekStart = addDays(weekStart, -7); render(); });
-  $('#next').addEventListener('click', () => { weekStart = addDays(weekStart, 7); render(); });
+  function shiftMonth(n) {
+    const d = new Date(month.y, month.m + n, 1);
+    month = { y: d.getFullYear(), m: d.getMonth() };
+    const weeks = monthWeeks(), cur = mondayOf(today());
+    weekStart = weeks.find(w => +w === +cur) || weeks[0];
+  }
+  $('#prev').addEventListener('click', () => { if (state.view === 'month') shiftMonth(-1); else { weekStart = addDays(weekStart, -7); syncMonth(); } render(); });
+  $('#next').addEventListener('click', () => { if (state.view === 'month') shiftMonth(1); else { weekStart = addDays(weekStart, 7); syncMonth(); } render(); });
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    state.view = t.dataset.view; save(); render(); window.scrollTo(0, 0);
+  }));
 
-  $('#savings').addEventListener('click', () => {
-    const ws = iso(weekStart);
-    if (state.saved[ws]) delete state.saved[ws]; else state.saved[ws] = true;
+  function toggleSaved(ws) {
+    if (savedAmount(ws) != null) delete state.saved[ws]; else state.saved[ws] = state.settings.savings;
     save(); render();
+  }
+  $('#savings').addEventListener('click', () => toggleSaved(iso(weekStart)));
+  $('#m-list').addEventListener('click', e => {
+    const sv = e.target.closest('[data-save-week]');
+    if (sv) return toggleSaved(sv.dataset.saveWeek);
+    const g = e.target.closest('[data-goto-week]');
+    if (g) { weekStart = parseIso(g.dataset.gotoWeek); state.view = 'week'; save(); render(); window.scrollTo(0, 0); }
   });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
@@ -444,7 +648,9 @@
     $('#f-amount').value = exp ? String(exp.amount).replace('.', ',') : '';
     $('#f-note').value = exp ? exp.note || '' : '';
     const t = today();
-    const defaultDate = (t >= weekStart && t <= addDays(weekStart, 6)) ? t : addDays(weekStart, 6);
+    let from = weekStart, to = addDays(weekStart, 6);
+    if (state.view === 'month') { const w = monthWeeks(); from = w[0]; to = addDays(w[w.length - 1], 6); }
+    const defaultDate = (t >= from && t <= to) ? t : to;
     $('#f-date').value = exp ? exp.date : iso(defaultDate);
     $('#f-delete').hidden = !exp;
     renderChips(); updateHint();
@@ -454,7 +660,7 @@
 
   $('#add').addEventListener('click', () => openExpense(null));
   $('#cats').addEventListener('click', e => { const b = e.target.closest('.cat'); if (b) openExpense(null, b.dataset.cat); });
-  $('#expenses').addEventListener('click', e => {
+  document.addEventListener('click', e => {
     const b = e.target.closest('.exp'); if (!b) return;
     openExpense(state.expenses.find(x => x.id === b.dataset.id));
   });
@@ -466,7 +672,7 @@
     const data = { amount, cat: selCat, note: $('#f-note').value.trim(), date: $('#f-date').value || iso(today()) };
     if (editingId) Object.assign(state.expenses.find(x => x.id === editingId), data);
     else state.expenses.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), created: Date.now(), ...data });
-    weekStart = mondayOf(parseIso(data.date));
+    weekStart = mondayOf(parseIso(data.date)); syncMonth();
     save(); render(); expDialog.close();
   });
   $('#f-delete').addEventListener('click', () => {
