@@ -20,3 +20,18 @@ Petite web-app minimaliste (couleurs pastel) pour suivre ses bonnes habitudes su
 3. Bouton **Partager** → **Sur l'écran d'accueil**. L'app s'ouvre ensuite en plein écran comme une vraie app.
 
 Aucune dépendance, aucun build : tout est dans `index.html`.
+
+---
+
+# Budget de la semaine 💶
+
+Deuxième petite app, dans le dossier `budget/` (`https://<utilisateur>.github.io/Tracker-/budget/`).
+
+- Une **limite par semaine** pour chaque catégorie : *Courses*, *Shopping*, *Martin*, *Autres*
+  (le budget total de la semaine = la somme des limites).
+- **Reste à dépenser** de la semaine, et pour chaque catégorie ce qui reste ; une catégorie passe en rouge si elle dépasse.
+- **Épargne de la semaine** (ex. 100 €) : une case à cocher, dès qu'elle est cochée c'est considéré comme fait.
+- Ajouter une dépense : montant, catégorie, description facultative, date. Toucher une dépense pour la modifier ou la supprimer.
+- Les semaines vont du lundi au dimanche ; flèches pour revoir les semaines passées.
+- Réglages (bouton en haut à droite) : limites, noms des catégories, montant d'épargne, sauvegarde / restauration.
+- S'installe sur l'écran d'accueil de l'iPhone de la même façon (ouvrir l'URL `/budget/` dans Safari).
