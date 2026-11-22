@@ -20,3 +20,20 @@ Petite web-app minimaliste (couleurs pastel) pour suivre ses bonnes habitudes su
 3. Bouton **Partager** → **Sur l'écran d'accueil**. L'app s'ouvre ensuite en plein écran comme une vraie app.
 
 Aucune dépendance, aucun build : tout est dans `index.html`.
+
+---
+
+# Listes 🧳 (dossier `listes/`)
+
+Seconde web-app, indépendante, pour les listes réutilisables : valises, courses, sorties…
+Design inspiré de l'app Rappels d'iOS.
+
+- **Mes listes** : chaque liste a un nom, une couleur et un emoji, avec son avancement (« 3/12 », « Prête ✓ »).
+- **Chapitres** dans une liste (ex. *Repas* : bavoir, biberon, lait · *Dodo* : gigoteuse, doudou), repliables, avec leur compteur.
+- Toucher une ligne pour la **cocher** ; ajout rapide en bas de chaque chapitre (Entrée pour enchaîner).
+- **Réinitialiser** (bouton ↺ ou bandeau « Tout est prêt ! ») : tout est décoché pour la prochaine fois, avec « Annuler » au cas où.
+- **Modifier** : renommer, supprimer et réordonner éléments et chapitres.
+- Menu ⋯ : infos de la liste, masquer les éléments cochés, dupliquer, supprimer ; sur l'accueil : réorganiser, sauvegarder / restaurer (JSON).
+
+Installation : même principe que ci-dessus, avec l'URL `https://<utilisateur>.github.io/Tracker-/listes/`
+ouverte dans Safari → **Partager** → **Sur l'écran d'accueil**.
