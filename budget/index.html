@@ -239,20 +239,32 @@
   .wk-body .exp { padding: 8px 0; }
   .wk-body .none { font-size: 13.5px; color: var(--muted); padding: 10px 0 2px; }
   .wk-body .goto { display: block; margin: 12px auto 0; color: var(--primary); font-weight: 600; font-size: 14px; }
+
+  /* Pilotage au mois */
+  .cat .mo { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 7px; margin-top: 1px; }
+  .cat .mo.over { color: var(--accent); font-weight: 600; }
+  .summary .ctx { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(232, 247, 238, .2); font-size: 13px; display: flex; justify-content: space-between; opacity: .9; }
+  .summary .ctx b { font-weight: 700; }
+  .m-sav { width: 100%; color: inherit; text-align: left; }
+  .m-sav .tick { border-color: rgba(232, 247, 238, .7); }
+  .m-sav .tick svg { color: var(--slate); }
+  .m-sav.done .tick { background: var(--mint); border-color: var(--mint); }
+  .m-sav.done .tick svg { opacity: 1; }
+  .m-sav .t2 { flex: 1; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="week-nav">
-    <button class="icon-btn ghost" id="prev" aria-label="Semaine précédente">
+    <button class="icon-btn ghost" id="prev" aria-label="Précédent">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
     <div class="week-label">
-      <small id="week-sub">Cette semaine</small>
+      <small id="week-sub">Ce mois-ci</small>
       <h1 id="week-title">—</h1>
     </div>
-    <button class="icon-btn ghost" id="next" aria-label="Semaine suivante">
+    <button class="icon-btn ghost" id="next" aria-label="Suivant">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
     </button>
   </div>
@@ -262,49 +274,41 @@
 </header>
 
 <div class="tabs" role="tablist">
-  <button class="tab" role="tab" data-view="week">Semaine</button>
   <button class="tab" role="tab" data-view="month">Mois</button>
+  <button class="tab" role="tab" data-view="week">Semaine</button>
 </div>
 
-<div id="view-week">
-<section class="card summary" id="summary">
-  <div class="label">Reste à dépenser cette semaine</div>
-  <div class="big num" id="sum-left">0 €</div>
-  <div class="bar"><i id="sum-bar"></i></div>
-  <div class="foot num"><span id="sum-spent"></span><span id="sum-total"></span></div>
-</section>
-
-<button class="card savings" id="savings" aria-pressed="false">
-  <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-  <span class="info">
-    <span class="title">Épargne de la semaine</span><br>
-    <span class="meta" id="sav-meta">À mettre de côté</span>
-  </span>
-  <span class="amount num" id="sav-amount">0 €</span>
-</button>
-
-<h2>Catégories <span>touche pour ajouter</span></h2>
-<div class="cats" id="cats"></div>
-
-<h2>Dépenses <span id="exp-count"></span></h2>
-<div id="expenses"></div>
-</div>
-
-<div id="view-month" hidden>
+<!-- Vue mois -->
+<div id="view-month">
   <section class="card summary" id="m-summary">
-    <div class="label" id="m-label">Dépensé ce mois-ci</div>
-    <div class="big num" id="m-spent">0 €</div>
+    <div class="label" id="m-label">Reste à dépenser ce mois-ci</div>
+    <div class="big num" id="m-left">0 €</div>
     <div class="bar"><i id="m-bar"></i></div>
-    <div class="foot num"><span id="m-left"></span><span id="m-total"></span></div>
-    <div class="m-sav">
-      <div><div class="t">Mis de côté</div><div class="v num" id="m-saved">0 €</div></div>
-      <div class="dots" id="m-dots"></div>
-    </div>
+    <div class="foot num"><span id="m-spent"></span><span id="m-total"></span></div>
+    <button class="m-sav" id="m-sav">
+      <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <span class="t2"><span class="t" id="m-sav-label">Épargne du mois</span><br><span class="v num" id="m-sav-amount">0 €</span></span>
+    </button>
   </section>
-  <h2>Par catégorie <span id="m-weeks"></span></h2>
-  <div class="card m-cats" id="m-cats"></div>
+  <h2>Par catégorie <span>touche pour ajouter</span></h2>
+  <div class="cats" id="m-cats"></div>
   <h2>Semaines <span>touche pour le détail</span></h2>
   <div id="m-list"></div>
+</div>
+
+<!-- Vue semaine -->
+<div id="view-week" hidden>
+  <section class="card summary" id="summary">
+    <div class="label">Reste à dépenser cette semaine</div>
+    <div class="big num" id="sum-left">0 €</div>
+    <div class="bar"><i id="sum-bar"></i></div>
+    <div class="foot num"><span id="sum-spent"></span><span id="sum-total"></span></div>
+    <div class="ctx num"><span id="ctx-month"></span><span id="ctx-left"></span></div>
+  </section>
+  <h2>Catégories <span>part de la semaine</span></h2>
+  <div class="cats" id="cats"></div>
+  <h2>Dépenses <span id="exp-count"></span></h2>
+  <div id="expenses"></div>
 </div>
 
 <button class="fab" id="add">
@@ -343,10 +347,10 @@
       <h3>Réglages</h3>
       <button type="button" class="link" data-close>Annuler</button>
     </div>
-    <label class="f">Limites par semaine <span style="font-weight:400">— touche l'emoji pour le changer</span></label>
+    <label class="f">Limites par mois <span style="font-weight:400">— touche l'emoji pour le changer</span></label>
     <div id="set-cats"></div>
-    <div class="total num"><span>Budget total de la semaine</span><b id="set-total">0 €</b></div>
-    <label class="f" for="set-sav">Épargne à mettre de côté chaque semaine</label>
+    <div class="total num"><span>Budget total du mois</span><b id="set-total">0 €</b></div>
+    <label class="f" for="set-sav">Épargne à mettre de côté chaque mois</label>
     <div class="amount-wrap"><input class="amount num" id="set-sav" inputmode="decimal" placeholder="0"></div>
     <div class="actions"><button type="submit" class="btn primary">Enregistrer</button></div>
     <label class="f">Données (stockées sur ce téléphone)</label>
@@ -363,14 +367,16 @@
   const STORE_KEY = 'budget-semaine-v1';
   const $ = s => document.querySelector(s);
   const DEFAULTS = {
-    savings: 100,
+    period: 'month',
+    savings: 400,
     cats: [
-      { id: 'courses',  name: 'Courses',  emoji: '🛒', limit: 120 },
-      { id: 'shopping', name: 'Shopping', emoji: '🛍️', limit: 60 },
-      { id: 'martin',   name: 'Martin',   emoji: '💙', limit: 40 },
-      { id: 'autres',   name: 'Autres',   emoji: '✨', limit: 50 },
+      { id: 'courses',  name: 'Courses',  emoji: '🛒', limit: 500 },
+      { id: 'shopping', name: 'Shopping', emoji: '🛍️', limit: 250 },
+      { id: 'martin',   name: 'Martin',   emoji: '💙', limit: 150 },
+      { id: 'autres',   name: 'Autres',   emoji: '✨', limit: 200 },
     ],
   };
+  const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
 
   // ---------- état ----------
   let state = load();
@@ -379,16 +385,23 @@
       const s = JSON.parse(localStorage.getItem(STORE_KEY));
       if (s && s.settings && Array.isArray(s.expenses)) return normalize(s);
     } catch (e) {}
-    return { settings: structuredClone(DEFAULTS), expenses: [], saved: {}, view: 'week' };
+    return { settings: structuredClone(DEFAULTS), expenses: [], saved: {}, view: 'month' };
   }
   function normalize(s) {
-    s.saved = s.saved || {};
-    s.settings.savings = Number(s.settings.savings) || 0;
-    // l'épargne cochée garde le montant du moment où elle a été cochée
-    for (const k in s.saved) if (typeof s.saved[k] !== 'number') s.saved[k] = s.settings.savings;
-    s.view = s.view === 'month' ? 'month' : 'week';
-    // garde toujours les 4 catégories, dans l'ordre
     s.settings.cats = DEFAULTS.cats.map(d => ({ ...d, ...(s.settings.cats || []).find(c => c.id === d.id) }));
+    s.settings.savings = Number(s.settings.savings) || 0;
+    // anciennes données : limites et épargne étaient par semaine -> on passe au mois
+    if (s.settings.period !== 'month') {
+      const toMonth = v => Math.round((Number(v) || 0) * 52 / 12 / 10) * 10;
+      s.settings.cats.forEach(c => { c.limit = toMonth(c.limit); });
+      s.settings.savings = toMonth(s.settings.savings);
+      s.settings.period = 'month';
+      s.saved = {};
+    }
+    s.saved = s.saved || {};
+    // épargne : une entrée par mois ("2026-11"), avec le montant au moment où elle a été cochée
+    for (const k in s.saved) if (!/^\d{4}-\d{2}$/.test(k) || typeof s.saved[k] !== 'number') delete s.saved[k];
+    s.view = s.view === 'week' ? 'week' : 'month';
     return s;
   }
   function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
@@ -400,45 +413,56 @@
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
   const mondayOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return addDays(x, -((x.getDay() + 6) % 7)); };
   const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+  const daysInMonth = d => new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const monthKey = (y, m) => `${y}-${pad(m + 1)}`;
 
+  let month = { y: today().getFullYear(), m: today().getMonth() };
   let weekStart = mondayOf(today());
-  // un mois = les semaines dont le lundi tombe dans ce mois
-  let month = { y: weekStart.getFullYear(), m: weekStart.getMonth() };
-  function monthWeeks(y = month.y, m = month.m) {
-    const first = new Date(y, m, 1);
-    let mon = mondayOf(first);
-    if (mon < first) mon = addDays(mon, 7);
-    const out = [];
-    for (; mon.getMonth() === m; mon = addDays(mon, 7)) out.push(mon);
+  const monthFirst = () => new Date(month.y, month.m, 1);
+  const monthLast = () => new Date(month.y, month.m + 1, 0);
+  // semaine -> mois : celui du jeudi (la semaine « appartient » au mois où elle a le plus de jours)
+  const syncMonthFromWeek = () => { const t = addDays(weekStart, 3); month = { y: t.getFullYear(), m: t.getMonth() }; };
+  // semaines du mois, coupées aux bords du mois
+  function monthWeeks() {
+    const first = monthFirst(), last = monthLast(), out = [];
+    for (let mon = mondayOf(first); mon <= last; mon = addDays(mon, 7)) {
+      const sun = addDays(mon, 6);
+      out.push({ mon, from: mon < first ? first : mon, to: sun > last ? last : sun });
+    }
     return out;
   }
-  const syncMonth = () => { month = { y: weekStart.getFullYear(), m: weekStart.getMonth() }; };
 
   // ---------- format ----------
   const eur0 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
   const eur2 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const money = n => { const r = Math.round(n * 100) / 100; return (Number.isInteger(r) ? eur0 : eur2).format(r); };
+  const signed = n => n < 0 ? `− ${money(-n)}` : money(n);
   const parseAmount = s => { const n = parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? Math.round(n * 100) / 100 : NaN; };
   const dayFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   const shortFmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
   const short = d => shortFmt.format(d).replace('.', '');
   const monthFmt = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
-  const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long' });
+  const monthName = d => new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(d);
   const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-  const weekTotal = () => state.settings.cats.reduce((s, c) => s + c.limit, 0);
-  const savedAmount = ws => state.saved[ws];
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lastGrapheme = v => { v = String(v).trim(); if (!v) return ''; try { return [...new Intl.Segmenter('fr', { granularity: 'grapheme' }).segment(v)].pop().segment; } catch (e) { return [...v].pop(); } };
   const catById = id => state.settings.cats.find(c => c.id === id) || state.settings.cats[3];
 
-  function weekExpenses(start = weekStart) {
-    const a = iso(start), b = iso(addDays(start, 6));
-    return state.expenses.filter(e => e.date >= a && e.date <= b);
+  // ---------- calculs ----------
+  const inRange = (from, to) => { const a = iso(from), b = iso(to); return state.expenses.filter(e => e.date >= a && e.date <= b); };
+  const sum = list => list.reduce((s, e) => s + e.amount, 0);
+  const spentIn = (list, catId) => sum(list.filter(e => e.cat === catId));
+  const monthTotal = () => state.settings.cats.reduce((s, c) => s + c.limit, 0);
+  // part d'une limite mensuelle sur une période : au prorata des jours, arrondie à l'euro
+  function share(limit, from, to) {
+    let t = 0;
+    for (let d = new Date(from); d <= to; d = addDays(d, 1)) t += limit / daysInMonth(d);
+    return Math.round(t);
   }
-  function spentIn(list, catId) { return list.filter(e => e.cat === catId).reduce((s, e) => s + e.amount, 0); }
+  const savedFor = key => state.saved[key];
 
   // ---------- rendu ----------
-  function expensesHtml(list) {
+  function expensesByDay(list) {
     const byDay = {};
     [...list].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created).forEach(e => (byDay[e.date] = byDay[e.date] || []).push(e));
     return Object.entries(byDay).map(([d, items]) => ({ d, items }));
@@ -451,6 +475,7 @@
       <span class="amt num">${money(e.amount)}</span>
     </button>`;
   }
+  const dayHead = (d, items) => `<div class="day"><span>${dayFmt.format(parseIso(d))}</span><span class="num">${money(sum(items))}</span></div>`;
   function catRow(c, spent, limit) {
     const over = spent > limit;
     const pct = limit ? Math.min(100, spent / limit * 100) : (spent > 0 ? 100 : 0);
@@ -458,6 +483,24 @@
       <div class="mrow-top"><span>${c.emoji}</span><span class="n">${esc(c.name)}</span><span class="v num"><b>${money(spent)}</b> / ${money(limit)}</span></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
     </div>`;
+  }
+  function catCard(c, spent, limit, extra = '') {
+    const r = limit - spent, over = r < 0;
+    const pct = limit ? Math.min(100, spent / limit * 100) : (spent > 0 ? 100 : 0);
+    return `<button class="card cat${over ? ' over' : ''}" data-cat="${c.id}">
+      <span class="cat-top"><span class="emoji">${c.emoji}</span><span class="name">${esc(c.name)}</span></span>
+      <span class="left num">${over ? '− ' + money(-r) : money(r)} <small>${over ? 'de trop' : 'restant'}</small></span>
+      <span class="bar"><i style="width:${pct}%"></i></span>
+      <span class="of num">${money(spent)} / ${money(limit)}</span>${extra}
+    </button>`;
+  }
+  function fillSummary(prefix, spent, total) {
+    const left = total - spent;
+    $(`#${prefix}summary`).classList.toggle('over', left < 0);
+    $(`#${prefix}left`).textContent = signed(left);
+    $(`#${prefix}bar`).style.width = (total ? Math.min(100, spent / total * 100) : 0) + '%';
+    $(`#${prefix}spent`).textContent = `${money(spent)} dépensés`;
+    $(`#${prefix}total`).textContent = `sur ${money(total)}`;
   }
 
   function render() {
@@ -471,67 +514,47 @@
   }
 
   function renderMonth() {
-    const t = mondayOf(today());
+    const t = today();
     const diff = (month.y - t.getFullYear()) * 12 + month.m - t.getMonth();
     $('#week-sub').textContent = diff === 0 ? 'Ce mois-ci' : diff === -1 ? 'Le mois dernier' : diff < 0 ? `Il y a ${-diff} mois` : `Dans ${diff} mois`;
-    $('#week-title').textContent = cap(monthFmt.format(new Date(month.y, month.m, 1)));
+    $('#week-title').textContent = cap(monthFmt.format(monthFirst()));
     $('#next').disabled = diff >= 0;
 
+    const all = inRange(monthFirst(), monthLast());
+    $('#m-label').textContent = `Reste à dépenser en ${monthName(monthFirst())}`;
+    fillSummary('m-', sum(all), monthTotal());
+
+    const key = monthKey(month.y, month.m), sv = savedFor(key);
+    $('#m-sav').classList.toggle('done', sv != null);
+    $('#m-sav').setAttribute('aria-pressed', sv != null);
+    $('#m-sav-label').textContent = sv != null ? 'Épargne du mois — mise de côté ✓' : 'Épargne du mois — coche quand c\'est fait';
+    $('#m-sav-amount').textContent = money(sv ?? state.settings.savings);
+
+    $('#m-cats').innerHTML = state.settings.cats.map(c => catCard(c, spentIn(all, c.id), c.limit)).join('');
+
     const weeks = monthWeeks();
-    const lists = weeks.map(w => weekExpenses(w));
-    const all = lists.flat();
-    const wTotal = weekTotal();
-    const total = wTotal * weeks.length;
-    const spent = all.reduce((s, e) => s + e.amount, 0);
-    const left = total - spent;
-
-    $('#m-label').textContent = `Dépensé en ${monthName.format(new Date(month.y, month.m, 1))}`;
-    $('#m-summary').classList.toggle('over', left < 0);
-    $('#m-spent').textContent = money(spent);
-    $('#m-bar').style.width = (total ? Math.min(100, spent / total * 100) : 0) + '%';
-    $('#m-left').textContent = left < 0 ? `${money(-left)} de dépassement` : `reste ${money(left)}`;
-    $('#m-total').textContent = `sur ${money(total)}`;
-
-    const keys = weeks.map(iso);
-    const saved = keys.reduce((s, k) => s + (savedAmount(k) || 0), 0);
-    const goal = keys.reduce((s, k) => s + (savedAmount(k) ?? state.settings.savings), 0);
-    $('#m-saved').innerHTML = `${money(saved)} <small>sur ${money(goal)}</small>`;
-    $('#m-dots').innerHTML = keys.map(k => `<i class="${savedAmount(k) != null ? 'on' : ''}"></i>`).join('');
-
-    $('#m-weeks').textContent = `${weeks.length} semaines · ${money(wTotal)}/sem.`;
-    $('#m-cats').innerHTML = state.settings.cats.map(c => catRow(c, spentIn(all, c.id), c.limit * weeks.length)).join('');
-
-    const curKey = iso(t);
     const openKeys = new Set([...document.querySelectorAll('#m-list details[open]')].map(d => d.dataset.week));
-    const firstRender = !$('#m-list').dataset.month || $('#m-list').dataset.month !== `${month.y}-${month.m}`;
-    $('#m-list').dataset.month = `${month.y}-${month.m}`;
-    $('#m-list').innerHTML = weeks.map((w, i) => {
-      const k = keys[i], list = lists[i];
-      const sp = list.reduce((s, e) => s + e.amount, 0), over = sp > wTotal;
-      const sv = savedAmount(k);
-      const isOpen = firstRender ? k === curKey : openKeys.has(k);
-      const future = w > t;
-      const days = expensesHtml(list);
+    const firstRender = $('#m-list').dataset.month !== key;
+    $('#m-list').dataset.month = key;
+    $('#m-list').innerHTML = weeks.map(w => {
+      const k = iso(w.mon), list = inRange(w.from, w.to);
+      const budget = state.settings.cats.reduce((s, c) => s + share(c.limit, w.from, w.to), 0);
+      const sp = sum(list), over = sp > budget;
+      const current = t >= w.from && t <= w.to, future = w.from > t;
+      const isOpen = firstRender ? current : openKeys.has(k);
+      const days = expensesByDay(list);
       return `<details class="wk${over ? ' over' : ''}" data-week="${k}"${isOpen ? ' open' : ''}>
         <summary>
           <div class="ws-info">
-            <div class="ws-title">${short(w)} – ${short(addDays(w, 6))}${k === curKey ? '<em>en cours</em>' : ''}</div>
-            <div class="ws-meta num"><b>${money(sp)}</b> / ${money(wTotal)}${over ? ' · dépassé' : future ? '' : ` · reste ${money(wTotal - sp)}`}</div>
-            <div class="bar ws-bar"><i style="width:${wTotal ? Math.min(100, sp / wTotal * 100) : 0}%"></i></div>
+            <div class="ws-title">${+w.from === +w.to ? short(w.to) : `${w.from.getDate()} – ${short(w.to)}`}${current ? '<em>en cours</em>' : ''}</div>
+            <div class="ws-meta num"><b>${money(sp)}</b> / ${money(budget)}${over ? ' · dépassé' : future ? '' : ` · reste ${money(budget - sp)}`}</div>
+            <div class="bar ws-bar"><i style="width:${budget ? Math.min(100, sp / budget * 100) : 0}%"></i></div>
           </div>
-          <span class="pig${sv != null ? ' on' : ''}">${sv != null ? '✓ ' + money(sv) : 'épargne'}</span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+          ${CHEV}
         </summary>
         <div class="wk-body">
-          ${state.settings.cats.map(c => catRow(c, spentIn(list, c.id), c.limit)).join('')}
-          <button class="sv${sv != null ? ' done' : ''}" data-save-week="${k}">
-            <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-            <span class="l">${sv != null ? 'Épargne mise de côté' : 'Épargne à mettre de côté'}</span>
-            <span class="r num">${money(sv ?? state.settings.savings)}</span>
-          </button>
-          ${days.length ? days.map(({ d, items }) => `
-            <div class="day"><span>${dayFmt.format(parseIso(d))}</span><span class="num">${money(items.reduce((s, e) => s + e.amount, 0))}</span></div>
-            ${items.map(expRow).join('')}`).join('') : '<div class="none">Aucune dépense cette semaine.</div>'}
+          ${state.settings.cats.map(c => catRow(c, spentIn(list, c.id), share(c.limit, w.from, w.to))).join('')}
+          ${days.length ? days.map(({ d, items }) => dayHead(d, items) + items.map(expRow).join('')).join('') : '<div class="none">Aucune dépense ces jours-ci.</div>'}
           <button class="goto" data-goto-week="${k}">Ouvrir la vue semaine →</button>
         </div>
       </details>`;
@@ -539,75 +562,60 @@
   }
 
   function renderWeek() {
-    const ws = iso(weekStart), cur = iso(mondayOf(today()));
-    const end = addDays(weekStart, 6);
-    const diff = Math.round((weekStart - mondayOf(today())) / 864e5 / 7);
+    const end = addDays(weekStart, 6), cur = mondayOf(today());
+    const diff = Math.round((weekStart - cur) / 864e5 / 7);
     $('#week-sub').textContent = diff === 0 ? 'Cette semaine' : diff === -1 ? 'Semaine dernière' : diff === 1 ? 'Semaine prochaine' : diff < 0 ? `Il y a ${-diff} semaines` : `Dans ${diff} semaines`;
     $('#week-title').textContent = `${short(weekStart)} – ${short(end)}`;
-    $('#next').disabled = ws >= cur;
+    $('#next').disabled = weekStart >= cur;
 
-    const list = weekExpenses();
-    const total = state.settings.cats.reduce((s, c) => s + c.limit, 0);
-    const spent = list.reduce((s, e) => s + e.amount, 0);
-    const left = total - spent;
-
+    const list = inRange(weekStart, end);
+    const shares = state.settings.cats.map(c => share(c.limit, weekStart, end));
+    const spent = sum(list), total = shares.reduce((a, b) => a + b, 0), left = total - spent;
     $('#summary').classList.toggle('over', left < 0);
-    $('#sum-left').textContent = left < 0 ? `− ${money(-left)}` : money(left);
+    $('#sum-left').textContent = signed(left);
     $('#sum-bar').style.width = (total ? Math.min(100, spent / total * 100) : 0) + '%';
     $('#sum-spent').textContent = `${money(spent)} dépensés`;
     $('#sum-total').textContent = `sur ${money(total)}`;
 
-    const done = savedAmount(ws) != null;
-    const sav = $('#savings');
-    sav.classList.toggle('done', done);
-    sav.setAttribute('aria-pressed', done);
-    $('#sav-amount').textContent = money(done ? savedAmount(ws) : state.settings.savings);
-    $('#sav-meta').textContent = done ? 'Mis de côté ✓' : 'À mettre de côté — coche quand c\'est fait';
+    // contexte : le mois en cours de cette semaine
+    const mAll = inRange(monthFirst(), monthLast());
+    const mLeft = monthTotal() - sum(mAll);
+    $('#ctx-month').textContent = `En ${monthName(monthFirst())}`;
+    $('#ctx-left').innerHTML = mLeft < 0 ? `<b>${money(-mLeft)}</b> de dépassement` : `reste <b>${money(mLeft)}</b> sur ${money(monthTotal())}`;
 
-    $('#cats').innerHTML = state.settings.cats.map(c => {
-      const s = spentIn(list, c.id), r = c.limit - s, over = r < 0;
-      const pct = c.limit ? Math.min(100, s / c.limit * 100) : (s > 0 ? 100 : 0);
-      return `<button class="card cat${over ? ' over' : ''}" data-cat="${c.id}">
-        <span class="cat-top"><span class="emoji">${c.emoji}</span><span class="name">${esc(c.name)}</span></span>
-        <span class="left num">${over ? '− ' + money(-r) : money(r)} <small>${over ? 'de trop' : 'restant'}</small></span>
-        <span class="bar"><i style="width:${pct}%"></i></span>
-        <span class="of num">${money(s)} / ${money(c.limit)}</span>
-      </button>`;
+    $('#cats').innerHTML = state.settings.cats.map((c, i) => {
+      const ms = spentIn(mAll, c.id);
+      return catCard(c, spentIn(list, c.id), shares[i],
+        `<span class="mo num${ms > c.limit ? ' over' : ''}">Mois : ${money(ms)} / ${money(c.limit)}</span>`);
     }).join('');
 
     $('#exp-count').textContent = list.length ? `${list.length} dépense${list.length > 1 ? 's' : ''}` : '';
-    if (!list.length) {
-      $('#expenses').innerHTML = `<div class="empty">Aucune dépense ${diff === 0 ? 'pour l\'instant cette semaine' : 'cette semaine-là'}.</div>`;
-    } else {
-      $('#expenses').innerHTML = expensesHtml(list).map(({ d, items }) => `
-        <div class="day"><span>${dayFmt.format(parseIso(d))}</span><span class="num">${money(items.reduce((s, e) => s + e.amount, 0))}</span></div>
-        <div class="card exp-list" style="padding:0">${items.map(expRow).join('')}</div>`).join('');
-    }
+    $('#expenses').innerHTML = list.length
+      ? expensesByDay(list).map(({ d, items }) => dayHead(d, items) + `<div class="card exp-list" style="padding:0">${items.map(expRow).join('')}</div>`).join('')
+      : `<div class="empty">Aucune dépense ${diff === 0 ? 'pour l\'instant cette semaine' : 'cette semaine-là'}.</div>`;
   }
 
   // ---------- navigation ----------
-  function shiftMonth(n) {
-    const d = new Date(month.y, month.m + n, 1);
+  function setMonth(y, m) {
+    const d = new Date(y, m, 1);
     month = { y: d.getFullYear(), m: d.getMonth() };
-    const weeks = monthWeeks(), cur = mondayOf(today());
-    weekStart = weeks.find(w => +w === +cur) || weeks[0];
+    const t = today();
+    weekStart = (t >= monthFirst() && t <= monthLast()) ? mondayOf(t) : mondayOf(addDays(monthFirst(), 3));
   }
-  $('#prev').addEventListener('click', () => { if (state.view === 'month') shiftMonth(-1); else { weekStart = addDays(weekStart, -7); syncMonth(); } render(); });
-  $('#next').addEventListener('click', () => { if (state.view === 'month') shiftMonth(1); else { weekStart = addDays(weekStart, 7); syncMonth(); } render(); });
+  $('#prev').addEventListener('click', () => { if (state.view === 'month') setMonth(month.y, month.m - 1); else { weekStart = addDays(weekStart, -7); syncMonthFromWeek(); } render(); });
+  $('#next').addEventListener('click', () => { if (state.view === 'month') setMonth(month.y, month.m + 1); else { weekStart = addDays(weekStart, 7); syncMonthFromWeek(); } render(); });
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     state.view = t.dataset.view; save(); render(); window.scrollTo(0, 0);
   }));
 
-  function toggleSaved(ws) {
-    if (savedAmount(ws) != null) delete state.saved[ws]; else state.saved[ws] = state.settings.savings;
+  $('#m-sav').addEventListener('click', () => {
+    const key = monthKey(month.y, month.m);
+    if (savedFor(key) != null) delete state.saved[key]; else state.saved[key] = state.settings.savings;
     save(); render();
-  }
-  $('#savings').addEventListener('click', () => toggleSaved(iso(weekStart)));
+  });
   $('#m-list').addEventListener('click', e => {
-    const sv = e.target.closest('[data-save-week]');
-    if (sv) return toggleSaved(sv.dataset.saveWeek);
     const g = e.target.closest('[data-goto-week]');
-    if (g) { weekStart = parseIso(g.dataset.gotoWeek); state.view = 'week'; save(); render(); window.scrollTo(0, 0); }
+    if (g) { weekStart = parseIso(g.dataset.gotoWeek); syncMonthFromWeek(); state.view = 'week'; save(); render(); window.scrollTo(0, 0); }
   });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
@@ -619,16 +627,15 @@
 
   function updateHint() {
     const c = catById(selCat);
-    const d = $('#f-date').value || iso(today());
-    const list = weekExpenses(mondayOf(parseIso(d))).filter(e => e.id !== editingId);
-    const amt = parseAmount($('#f-amount').value) || 0;
-    const r = c.limit - spentIn(list, c.id);
-    const after = r - amt;
+    const d = parseIso($('#f-date').value || iso(today()));
+    const from = new Date(d.getFullYear(), d.getMonth(), 1), to = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    const list = inRange(from, to).filter(e => e.id !== editingId);
+    const after = c.limit - spentIn(list, c.id) - (parseAmount($('#f-amount').value) || 0);
     const h = $('#f-hint');
     h.classList.toggle('warn', after < 0);
     h.textContent = after < 0
-      ? `Attention : ${money(-after)} au-dessus de la limite ${c.name}`
-      : `Il restera ${money(after)} en ${c.name} cette semaine`;
+      ? `Attention : ${money(-after)} au-dessus de la limite ${c.name} de ${monthName(d)}`
+      : `Il restera ${money(after)} en ${c.name} pour ${monthName(d)}`;
   }
   function renderChips() {
     $('#f-cats').innerHTML = state.settings.cats.map(c =>
@@ -648,10 +655,8 @@
     $('#f-amount').value = exp ? String(exp.amount).replace('.', ',') : '';
     $('#f-note').value = exp ? exp.note || '' : '';
     const t = today();
-    let from = weekStart, to = addDays(weekStart, 6);
-    if (state.view === 'month') { const w = monthWeeks(); from = w[0]; to = addDays(w[w.length - 1], 6); }
-    const defaultDate = (t >= from && t <= to) ? t : to;
-    $('#f-date').value = exp ? exp.date : iso(defaultDate);
+    const [from, to] = state.view === 'month' ? [monthFirst(), monthLast()] : [weekStart, addDays(weekStart, 6)];
+    $('#f-date').value = exp ? exp.date : iso(t >= from && t <= to ? t : to);
     $('#f-delete').hidden = !exp;
     renderChips(); updateHint();
     expDialog.showModal();
@@ -659,10 +664,11 @@
   }
 
   $('#add').addEventListener('click', () => openExpense(null));
-  $('#cats').addEventListener('click', e => { const b = e.target.closest('.cat'); if (b) openExpense(null, b.dataset.cat); });
   document.addEventListener('click', e => {
-    const b = e.target.closest('.exp'); if (!b) return;
-    openExpense(state.expenses.find(x => x.id === b.dataset.id));
+    const c = e.target.closest('.cat');
+    if (c) return openExpense(null, c.dataset.cat);
+    const b = e.target.closest('.exp');
+    if (b) openExpense(state.expenses.find(x => x.id === b.dataset.id));
   });
 
   $('#exp-form').addEventListener('submit', e => {
@@ -672,7 +678,9 @@
     const data = { amount, cat: selCat, note: $('#f-note').value.trim(), date: $('#f-date').value || iso(today()) };
     if (editingId) Object.assign(state.expenses.find(x => x.id === editingId), data);
     else state.expenses.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), created: Date.now(), ...data });
-    weekStart = mondayOf(parseIso(data.date)); syncMonth();
+    const d = parseIso(data.date);
+    if (state.view === 'month') setMonth(d.getFullYear(), d.getMonth());
+    else { weekStart = mondayOf(d); syncMonthFromWeek(); }
     save(); render(); expDialog.close();
   });
   $('#f-delete').addEventListener('click', () => {
@@ -692,7 +700,7 @@
       <div class="row" data-id="${c.id}">
         <input type="text" class="emo" value="${c.emoji}" aria-label="Emoji ${esc(c.name)}" autocomplete="off">
         <input type="text" class="nm" value="${esc(c.name)}" aria-label="Nom de la catégorie" maxlength="20">
-        <span class="lim"><input class="amount num" inputmode="decimal" value="${String(c.limit).replace('.', ',')}" aria-label="Limite ${esc(c.name)}"></span>
+        <span class="lim"><input class="amount num" inputmode="decimal" value="${String(c.limit).replace('.', ',')}" aria-label="Limite mensuelle ${esc(c.name)}"></span>
       </div>`).join('');
     $('#set-sav').value = String(state.settings.savings).replace('.', ',');
     setTotal();
@@ -735,11 +743,9 @@
     e.target.value = '';
   });
 
-  // nouvelle semaine : si l'appli reste ouverte, on se recale au retour
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') render();
-  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') render(); });
 
+  save();
   render();
 
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

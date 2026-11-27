@@ -23,20 +23,18 @@ Aucune dépendance, aucun build : tout est dans `index.html`.
 
 ---
 
-# Budget de la semaine 💶
+# Budget 💶
 
 Deuxième petite app, dans le dossier `budget/` (`https://<utilisateur>.github.io/Tracker-/budget/`).
 
-- Une **limite par semaine** pour chaque catégorie : *Courses*, *Shopping*, *Martin*, *Autres*
-  (le budget total de la semaine = la somme des limites).
-- **Reste à dépenser** de la semaine, et pour chaque catégorie ce qui reste ; une catégorie passe en rouge si elle dépasse.
-- **Épargne de la semaine** (ex. 100 €) : une case à cocher, dès qu'elle est cochée c'est considéré comme fait.
-- Ajouter une dépense : montant, catégorie, description facultative, date. Toucher une dépense pour la modifier ou la supprimer.
-- Les semaines vont du lundi au dimanche ; flèches pour revoir les semaines passées.
-- **Deux vues** (onglets *Semaine* / *Mois*) :
-  - *Semaine* : le détail de la semaine, catégorie par catégorie.
-  - *Mois* : un grand bloc avec le total dépensé du mois et le total mis de côté, le total par catégorie,
-    puis chaque semaine en menu déroulant (catégories, case épargne, dépenses).
-    Une semaine compte dans le mois où tombe son lundi.
-- Réglages (bouton en haut à droite) : limites, noms et emojis des catégories, montant d'épargne, sauvegarde / restauration.
+- Tout se pilote **au mois** : une limite mensuelle pour chaque catégorie (*Courses*, *Shopping*, *Martin*, *Autres*),
+  le budget du mois = la somme des limites.
+- **Épargne du mois** (ex. 400 €) : une case à cocher, dès qu'elle est cochée c'est considéré comme fait.
+- **Vue Mois** : reste à dépenser du mois, épargne, ce qui reste par catégorie, puis chaque semaine du mois
+  en menu déroulant (dépenses, détail par catégorie).
+- **Vue Semaine** : la part de la semaine dans le budget du mois (limite au prorata des jours),
+  avec le rappel de ce qui reste sur le mois.
+- Une catégorie passe en rouge si elle dépasse. Toucher une catégorie pour y ajouter une dépense,
+  toucher une dépense pour la modifier ou la supprimer.
+- Réglages (bouton en haut à droite) : limites mensuelles, noms et emojis des catégories, épargne, sauvegarde / restauration.
 - S'installe sur l'écran d'accueil de l'iPhone de la même façon (ouvrir l'URL `/budget/` dans Safari).
